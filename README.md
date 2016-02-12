@@ -58,7 +58,7 @@ Yep, pretty boring so far...
 The software model needs two things from you to know what you want to build:
 
 - Applying a plugin that knows how to handle the language your project uses.
-- Defining a **component** that your project produces.
+- Defining a component that your project produces.
 
 Let's start by adding the basics to your build file:
 
@@ -220,8 +220,8 @@ model {
 
     // suites are their own category of components
     testSuites {
-        // a suite named "test" of type "JUnitTestSuiteSpec" (since we're leveraging)
-        // a JUnit runner to detect the clojure.test tests.
+        // a suite named "test" of type "JUnitTestSuiteSpec" (since we're leveraging
+        // a JUnit runner to detect the clojure.test tests).
         test(JUnitTestSuiteSpec) {
             // version of JUnit to use
             jUnitVersion '4.12'
@@ -339,7 +339,7 @@ Let's run the tests and see what happens:
 ./gradlew :testMainJarBinaryTest
 ```
 
-You'll note that it found one test failure. Telling you the name of the namespace
+You'll note that it found one test failure, telling you the name of the namespace
 and var, while also pointing you to the HTML report for a more in-depth output.
 
 ```
@@ -464,7 +464,97 @@ Or the shorthand to do all publishes `./gradlew publish`.
 
 ## Full Build file
 
+```groovy
+// configuration specific to the build itself (not your project)
+buildscript {
+    // where should Gradle look for the dependencies?
+    repositories { jcenter() }
+    // what needs to be on Gradle's classpath in order to execute the build logic
+    dependencies { classpath 'org.graclj:graclj-plugin:0.1.0-rc.2' }
+}
 
+// we want to produce components for the JVM
+apply plugin: 'jvm-component'
+// we want to use Clojure
+apply plugin: 'org.graclj.clojure-lang'
+// we want to use clojure.test
+apply plugin: 'org.graclj.clojure-test-suite'
+// we want to publish to a maven repository
+apply plugin: 'maven-publish'
+
+repositories {
+    mavenLocal()
+    // Gradle has a shorthand for JCenter
+    jcenter()
+    // ... and Maven Central
+    mavenCentral()
+
+    // ... but not Clojars
+    maven {
+        name = 'clojars'
+        url = 'https://clojars.org/repo'
+    }
+}
+
+// we want to configure the declarative model
+model {
+    // we want to define a component the project will produce
+    components {
+        // define a component named "main", of the type "JvmLibrarySpec"
+        main(JvmLibrarySpec) {
+            // we need to list our dependencies
+            dependencies {
+                // <group>:<artifact>:<version>
+                module 'org.clojure:clojure:1.8.0'
+                module 'clj-time:clj-time:0.8.0'
+            }
+        }
+    }
+
+    // suites are their own category of components
+    testSuites {
+        // a suite named "test" of type "JUnitTestSuiteSpec" (since we're leveraging)
+        // a JUnit runner to detect the clojure.test tests.
+        test(JUnitTestSuiteSpec) {
+            // version of JUnit to use
+            jUnitVersion '4.12'
+            // which component does this suite test (the $. is how you reference other
+            // parts of the model)
+            testing $.components.main
+        }
+    }
+}
+
+publishing {
+    // define the publications
+    publications {
+        // create a publication named "main"
+        main(MavenPublication) {
+            groupId = 'org.clojars.ajoberstar'
+            version = '0.1.0-SNAPSHOT'
+            artifact(tasks.createMainJar)
+            artifact(tasks.createMainAotJar) {
+                classifier = 'aot'
+            }
+        }
+    }
+    // define where they can be published to
+    repositories {
+        // your ~/.m2/repository
+        mavenLocal()
+        // Clojars
+        maven {
+            name = 'clojars'
+            url = 'https://clojars.org/repo'
+            // we're going to reference project properties for this
+            credentials {
+                username = clojars_username
+                password = clojars_password
+            }
+        }
+    }
+}
+```
 
 ## Where do I go from here?
 
