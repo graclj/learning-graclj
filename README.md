@@ -8,6 +8,7 @@ A couple disclaimers before you continue:
 - This guide *does not* assume any knowledge of Gradle.
 - Graclj 0.1.0 only supports a nightly version of Gradle:
   - `2.12-20160211000031+0000`
+- If you want instructions for a different version of Graclj, look in the branches.
 
 ## Getting Started
 
