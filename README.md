@@ -48,7 +48,7 @@ buildscript {
     // where should Gradle look for the dependencies?
     repositories { jcenter() }
     // what needs to be on Gradle's classpath in order to execute the build logic
-    dependencies { classpath 'org.graclj:graclj-plugin:0.1.0-rc.2' }
+    dependencies { classpath 'org.graclj:graclj-plugin:0.1.0' }
 }
 ```
 
@@ -101,8 +101,8 @@ JVM library 'main'
 ------------------
 
 Source sets
-    Clojure source 'main:Clojure'
-        srcDir: src\main\Clojure
+    Clojure source 'main:clojure'
+        srcDir: src\main\clojure
     JVM resources 'main:resources'
         srcDir: src\main\resources
 
@@ -164,8 +164,8 @@ First we need to list which repositories we will get the dependencies from:
 // ... plugin application ...
 
 repositories {
-    // Gradle has a shorthand for Maven Central (where we'll get clojure itself)
-    mavenCentral()
+    // Gradle has a shorthand for JCenter (and Maven Central) (where we'll get clojure itself and the graclj-tools)
+    jcenter()
 
     // ... but not Clojars (where we'll get clj-time)
     maven {
@@ -245,7 +245,7 @@ JVM library 'main'
 ------------------
 
 Source sets
-    Clojure source 'main:Clojure'
+    Clojure source 'main:clojure'
         srcDir: src\main\clojure
     JVM resources 'main:resources'
         srcDir: src\main\resources
@@ -272,8 +272,8 @@ JUnit test suite 'test'
 -----------------------
 
 Source sets
-    Clojure source 'test:Clojure'
-        srcDir: src\test\Clojure
+    Clojure source 'test:clojure'
+        srcDir: src\test\clojure
     JVM resources 'test:resources'
         srcDir: src\test\resources
 
@@ -471,7 +471,7 @@ buildscript {
     // where should Gradle look for the dependencies?
     repositories { jcenter() }
     // what needs to be on Gradle's classpath in order to execute the build logic
-    dependencies { classpath 'org.graclj:graclj-plugin:0.1.0-rc.2' }
+    dependencies { classpath 'org.graclj:graclj-plugin:0.1.0' }
 }
 
 // we want to produce components for the JVM
@@ -484,11 +484,8 @@ apply plugin: 'org.graclj.clojure-test-suite'
 apply plugin: 'maven-publish'
 
 repositories {
-    mavenLocal()
     // Gradle has a shorthand for JCenter
     jcenter()
-    // ... and Maven Central
-    mavenCentral()
 
     // ... but not Clojars
     maven {
